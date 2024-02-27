@@ -6,8 +6,10 @@ export const newUser = async (
     res: Response, 
     next: NextFunction)=>{
     try {
-        const {fname, lname,photo,gender, role} =  req.body;
-        const user = await User.create({})
+        const {fname, lname,email, photo,gender, role, _id, dob} =  req.body;
+        const user = await User.create({
+            fname, lname,email, photo,gender, role, _id, dob
+        })
             return res.status(200).json({
                 success:true,
                 message:  `Welcome, ${user.fname}`
@@ -15,6 +17,9 @@ export const newUser = async (
         
         
     } catch (error) {
-        
+        return res.status(200).json({
+            success:true,
+            message:  error
+        })
     }
 };
