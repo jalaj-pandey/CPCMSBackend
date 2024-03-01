@@ -5,8 +5,7 @@ import { NextFunction, Request, Response } from "express";
 
 export interface NewUserRequestBody {
     _id: string;
-    fname: string;
-    lname: string;
+    name: string;
     email: string;
     photo: string;
     role: "admin" | "user";

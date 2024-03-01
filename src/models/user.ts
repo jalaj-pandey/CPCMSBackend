@@ -3,8 +3,7 @@ import validator from "validator";
 
 interface IUser extends Document {
     _id: string;
-    fname: string;
-    lname: string;
+    name: string;
     email: string;
     photo: string;
     role: "admin" | "user";
@@ -21,13 +20,9 @@ const schema = new mongoose.Schema(
         type: String,
         required: [true, "Please enter ID"],
     },
-    fname: {
+    name: {
         type: String,
         required: [true, "Please enter first name"],
-    },
-    lname: {
-        type: String,
-        required: [true, "Please enter last name"],
     },
     email: {
         type: String,
