@@ -5,6 +5,6 @@ import { singleUpload } from "../middlewares/multer.js";
 
 const app = express.Router();
 
-app.post('/new',singleUpload, newJob)
+app.post('/new', adminOnly, singleUpload, newJob)
 
 export default app;
