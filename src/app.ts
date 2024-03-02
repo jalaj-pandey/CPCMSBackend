@@ -1,15 +1,20 @@
 import express from "express";
-const port = process.env.PORT || 3000;
-
-const app = express();
-import userRoutes from "./routes/user.js"
 import { connectDB } from "./utils/features.js";
 import { errorMiddleware } from "./middlewares/error.js";
+
+import userRoute from "./routes/user.js"
+import jobRoute from "./routes/jobs.js"
+
+
+const port = process.env.PORT || 3000;
+const app = express();
+
 
 app.use(express.json());
 connectDB();
 
-app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/user", userRoute);
+app.use("/api/v1/job", jobRoute);
 
 app.get("/", (req, res) => {
     res.send("This is working");
