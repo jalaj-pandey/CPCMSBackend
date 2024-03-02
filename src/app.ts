@@ -20,6 +20,8 @@ app.get("/", (req, res) => {
     res.send("This is working");
 })
 
+app.use('/uploads', express.static("uploads"))
+
 
 app.use(errorMiddleware)
 
