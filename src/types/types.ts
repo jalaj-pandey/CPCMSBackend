@@ -1,15 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 
 export interface NewJobRequestBody {
-    _id: string;
-    name: string;
-    photo: string;
+  _id: string;
+  name: string;
+  photo: string;
   title: string;
   description: string;
   requirements: string;
   salary: number;
   location: string;
-  
 }
 
 export interface NewUserRequestBody {
