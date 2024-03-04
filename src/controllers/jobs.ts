@@ -154,10 +154,21 @@ export const getAllJobs = TryCatch(
     $regex: company, 
     $options: "i",
   }
-  const jobs = await Jobs.find(baseQuery);
+
+  const jobsPromise = Jobs.find(baseQuery).sort(
+    sort && {salary: sort === "asc" ? 1: -1}
+    ).limit(limit).skip(skip);
+
+  const [jobs,filteredOnlyJobs] = await Promise.all([
+    jobsPromise,
+    Jobs.find({baseQuery})
+  ])
+    
+    const totalPage = Math.ceil(filteredOnlyJobs.length/limit);
 
   return res.status(201).json({
     success: true,
     jobs,
+    totalPage,
   });
 });
