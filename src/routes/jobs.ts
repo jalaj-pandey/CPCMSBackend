@@ -1,6 +1,6 @@
 import express from "express";
 import { adminOnly } from "../middlewares/auth.js";
-import { getAdminJobs, getLatestJobs, getSingleJobs, newJob, updateJob } from "../controllers/jobs.js";
+import { deleteJob, getAdminJobs, getAllJobs, getLatestJobs, getSingleJob, newJob, updateJob } from "../controllers/jobs.js";
 import { singleUpload } from "../middlewares/multer.js";
 
 const app = express.Router();
@@ -11,12 +11,17 @@ app.post('/new', adminOnly, singleUpload, newJob);
 // To get 10 latest jobs - /api/v1//job/latest
 app.get('/latest', getLatestJobs);
 
-// To get all jobs - /api/v1/job/admin-jobs
-app.get('/admin-jobs', getAdminJobs);
+// Search jobs with filters - /api/v1/job/all
+app.get('/all', getAllJobs );
 
+// To get all jobs - /api/v1/job/admin-jobs
+app.get('/admin-jobs', adminOnly, getAdminJobs);
+
+// To get, update and delete jobs
 app.route('/:id')
-    .get(getSingleJobs)
-    .put(singleUpload,updateJob)
+    .get(getSingleJob)
+    .put(adminOnly, singleUpload, updateJob)
+    .delete(adminOnly, deleteJob);
 
 
 export default app;

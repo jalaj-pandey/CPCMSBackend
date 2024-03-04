@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { TryCatch } from "../middlewares/error.js";
-import { NewJobRequestBody } from "../types/types.js";
+import { BaseQuery, NewJobRequestBody, searchRequestQuery } from "../types/types.js";
 import { Jobs } from "../models/jobs.js";
 import ErrorHandler from "../types/utility-class.js";
 import { rm } from "fs";
@@ -13,7 +13,6 @@ export const newJob = TryCatch(
     if (!photo) return next(new ErrorHandler("Please provide a photo", 400));
     
     if (
-      !_id ||
       !name ||
       !title ||
       !description ||
@@ -62,11 +61,13 @@ export const getAdminJobs = TryCatch(async (req, res, next) => {
   });
 });
 
-export const getSingleJobs = TryCatch(async (req, res, next) => {
-  const jobs = await Jobs.findById(req.params.id);
+export const getSingleJob = TryCatch(async (req, res, next) => {
+  const job = await Jobs.findById(req.params.id);
+  if(!job) return next(new ErrorHandler("Job not found", 404))
+
   return res.status(201).json({
     success: true,
-    jobs,
+    job,
   });
 });
 
@@ -77,7 +78,7 @@ export const updateJob = TryCatch(
     const photo = req.file;
     const job = await Jobs.findById(id);
 
-    if(!job) return next(new ErrorHandler("Job Not ID", 404))
+    if(!job) return next(new ErrorHandler("Job not found", 404))
 
 
     if (photo) {
@@ -97,9 +98,66 @@ export const updateJob = TryCatch(
 
     await job.save();
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       Message: "Job updated successfully",
     });
   }
 );
+
+
+
+export const deleteJob = TryCatch(async (req, res, next) => {
+  const job = await Jobs.findById(req.params.id);
+  if(!job) return next(new ErrorHandler("Job Not Found", 404))
+
+  rm(job.photo!, () => {
+        console.log("Job photo deleted");
+      });
+  await job.deleteOne();
+  return res.status(201).json({
+    success: true,
+    Message: "Job deleted successfully",
+
+  });
+});
+
+
+
+
+export const getAllJobs = TryCatch(
+  async (req: Request<{},{},{},searchRequestQuery>, res, next) => {
+
+  const {search,sort,salary,company} = req.query;
+
+  const page = Number(req.query.page) || 1;
+
+  const limit = Number(process.env.JOBS_PER_PAGE) || 8;
+  const skip = limit*(page - 1);
+
+
+  const baseQuery: BaseQuery = {
+    
+    
+  }
+
+  if(search) baseQuery.name = {
+    $regex: search, 
+    $options: "i",
+  };
+
+  if(salary) baseQuery.salary = {
+    $lte: Number(salary),
+  }
+
+  if(company) baseQuery.company = {
+    $regex: company, 
+    $options: "i",
+  }
+  const jobs = await Jobs.find(baseQuery);
+
+  return res.status(201).json({
+    success: true,
+    jobs,
+  });
+});
