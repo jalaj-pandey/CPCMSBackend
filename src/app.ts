@@ -1,6 +1,7 @@
 import express from "express";
 import { connectDB } from "./utils/features.js";
 import { errorMiddleware } from "./middlewares/error.js";
+import NodeCache from "node-cache"
 
 import userRoute from "./routes/user.js"
 import jobRoute from "./routes/jobs.js"
@@ -12,6 +13,8 @@ const app = express();
 
 app.use(express.json());
 connectDB();
+
+export const myCache = new NodeCache();
 
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/job", jobRoute);

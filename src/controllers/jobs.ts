@@ -4,6 +4,7 @@ import { BaseQuery, NewJobRequestBody, searchRequestQuery } from "../types/types
 import { Jobs } from "../models/jobs.js";
 import ErrorHandler from "../types/utility-class.js";
 import { rm } from "fs";
+import { myCache } from "../app.js";
 
 export const newJob = TryCatch(
   async (req: Request<{}, {}, NewJobRequestBody>, res, next) => {
@@ -45,7 +46,15 @@ export const newJob = TryCatch(
 );
 
 export const getLatestJobs = TryCatch(async (req, res, next) => {
-  const jobs = await Jobs.find({}).sort({ createdAt: -1 }).limit(5);
+
+  let jobs;
+  if(myCache.has("latest-jobs")) 
+  jobs = JSON.parse(myCache.get("latest-jobs") as string);
+  else{
+    jobs = await Jobs.find({}).sort({ createdAt: -1 }).limit(5);
+    myCache.set("latest-jobs", JSON.stringify(jobs));
+  }
+   
 
   return res.status(201).json({
     success: true,
@@ -141,7 +150,7 @@ export const getAllJobs = TryCatch(
     
   }
 
-  if(search) baseQuery.name = {
+  if(search) baseQuery.title = {
     $regex: search, 
     $options: "i",
   };
@@ -150,7 +159,7 @@ export const getAllJobs = TryCatch(
     $lte: Number(salary),
   }
 
-  if(company) baseQuery.company = {
+  if(company) baseQuery.name = {
     $regex: company, 
     $options: "i",
   }
@@ -172,3 +181,5 @@ export const getAllJobs = TryCatch(
     totalPage,
   });
 });
+
+

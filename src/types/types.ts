@@ -45,7 +45,7 @@ export interface BaseQuery {
   salary?:{
     $lte: Number,
   },
-  company?:{
+  title?:{
     $regex: string,
     $options: string,
   }
