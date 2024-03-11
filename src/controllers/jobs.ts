@@ -9,46 +9,8 @@ import { Jobs } from "../models/jobs.js";
 import ErrorHandler from "../types/utility-class.js";
 import { rm } from "fs";
 import { myCache } from "../app.js";
+import { invalidateCache } from "../utils/features.js";
 
-export const newJob = TryCatch(
-  async (req: Request<{}, {}, NewJobRequestBody>, res, next) => {
-    const { _id, name, title, description, requirements, salary, location } =
-      req.body;
-    const photo = req.file;
-
-    if (!photo) return next(new ErrorHandler("Please provide a photo", 400));
-
-    if (
-      !name ||
-      !title ||
-      !description ||
-      !requirements ||
-      !salary ||
-      !location
-    ) {
-      rm(photo.path, () => {
-        console.log("deleted");
-      });
-      return next(new ErrorHandler("Please provide all fields", 400));
-    }
-
-    await Jobs.create({
-      _id,
-      name,
-      title,
-      description,
-      requirements,
-      salary,
-      location,
-      photo: photo.path,
-    });
-
-    return res.status(201).json({
-      success: true,
-      Message: "Job created successfully",
-    });
-  }
-);
 
 // Revalidate on New, Update and Delete jobs
 export const getLatestJobs = TryCatch(async (req, res, next) => {
@@ -98,6 +60,50 @@ export const getSingleJob = TryCatch(async (req, res, next) => {
   });
 });
 
+// Creating New Job
+export const newJob = TryCatch(
+  async (req: Request<{}, {}, NewJobRequestBody>, res, next) => {
+    const { _id, name, title, description, requirements, salary, location } =
+      req.body;
+    const photo = req.file;
+
+    if (!photo) return next(new ErrorHandler("Please provide a photo", 400));
+
+    if (
+      !name ||
+      !title ||
+      !description ||
+      !requirements ||
+      !salary ||
+      !location
+    ) {
+      rm(photo.path, () => {
+        console.log("deleted");
+      });
+      return next(new ErrorHandler("Please provide all fields", 400));
+    }
+
+    await Jobs.create({
+      _id,
+      name,
+      title,
+      description,
+      requirements,
+      salary,
+      location,
+      photo: photo.path,
+    });
+
+    await invalidateCache({jobs : true});
+
+    return res.status(201).json({
+      success: true,
+      Message: "Job created successfully",
+    });
+  }
+);
+
+// Updating Job
 export const updateJob = TryCatch(async (req, res, next) => {
   const id = req.params.id;
   const { name, title, description, requirements, salary, location } = req.body;
@@ -121,6 +127,7 @@ export const updateJob = TryCatch(async (req, res, next) => {
   if (location) job.location = location;
 
   await job.save();
+  await invalidateCache({jobs : true});
 
   return res.status(200).json({
     success: true,
@@ -128,6 +135,7 @@ export const updateJob = TryCatch(async (req, res, next) => {
   });
 });
 
+// Deleting a job
 export const deleteJob = TryCatch(async (req, res, next) => {
   const job = await Jobs.findById(req.params.id);
   if (!job) return next(new ErrorHandler("Job Not Found", 404));
@@ -135,7 +143,10 @@ export const deleteJob = TryCatch(async (req, res, next) => {
   rm(job.photo!, () => {
     console.log("Job photo deleted");
   });
+  
   await job.deleteOne();
+  await invalidateCache({jobs : true});
+
   return res.status(201).json({
     success: true,
     Message: "Job deleted successfully",

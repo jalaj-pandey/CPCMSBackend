@@ -50,3 +50,9 @@ export interface BaseQuery {
     $options: string,
   }
 }
+
+export type InvalidateCacheProps = {
+  jobs ?: boolean,
+  apply ?: boolean,
+  admin ?: boolean,
+}
