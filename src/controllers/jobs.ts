@@ -145,6 +145,7 @@ export const deleteJob = TryCatch(async (req, res, next) => {
   });
   
   await job.deleteOne();
+  
   await invalidateCache({jobs : true});
 
   return res.status(201).json({

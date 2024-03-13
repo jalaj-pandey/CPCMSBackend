@@ -2,16 +2,29 @@ import mongoose from "mongoose";
 
 const schema = new mongoose.Schema(
   {
-    jobs: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Jobs",
-      required: true,
-    },
-    user: {
-      type: String,
-      ref: "User",
-      required: true,
-    },
+    jobInfo: [{
+      name: String,
+      title: String,
+      salary: Number,
+      location: String,
+      jobId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Jobs",
+      }
+    }],
+    userInfo: [
+      {
+        name: String,
+        email: String,
+        photo: String,
+        gender: String,
+        dob: Date,
+        userId: {
+          type: String,
+          ref: "User",
+        },
+      }
+    ]
   },
   {
     timestamps: true,

@@ -28,38 +28,52 @@ export type controllerType = (
   next: NextFunction
 ) => Promise<void | Response<any, Record<string, any>>>;
 
-
 export type searchRequestQuery = {
   search?: string;
   company?: string;
   salary?: string;
   sort?: string;
   page?: string;
-}
-
+};
 
 export interface BaseQuery {
   name?: {
-    $regex: string,
-    $options: string,
-  },
-  salary?:{
-    $lte: Number,
-  },
-  title?:{
-    $regex: string,
-    $options: string,
-  }
+    $regex: string;
+    $options: string;
+  };
+  salary?: {
+    $lte: Number;
+  };
+  title?: {
+    $regex: string;
+    $options: string;
+  };
 }
 
 export type InvalidateCacheProps = {
-  jobs ?: boolean,
-  apply ?: boolean,
-  admin ?: boolean,
-}
+  jobs?: boolean;
+  apply?: boolean;
+  admin?: boolean;
+};
 
+export type jobInfoType = {
+  name: String;
+  title: String;
+  salary: Number;
+  location: String;
+  jobId: String;
+};
+
+export type userInfoType = {
+  name: String;
+  email: String;
+  photo: String;
+  gender: String;
+  dob: Date;
+  userId: String;
+};
 
 export interface newApplicationRequestBody {
-  user: String,
-  jobs: String,
+  userInfo: userInfoType[];
+  jobInfo: jobInfoType[];
 }
