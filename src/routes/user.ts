@@ -1,12 +1,15 @@
 import express from "express";
 import { deleteUser, getAllUsers, getUser, newUser } from "../controllers/user.js";
 import { adminOnly } from "../middlewares/auth.js";
-import { singleUpload } from "../middlewares/multer.js";
+import upload from "../middlewares/multer.js";
 const app = express.Router();
 
 
 // Routes.... /api/v1/user/new
-app.post('/new',singleUpload, newUser);
+app.post('/new', upload.fields([
+    { name: 'photo', maxCount: 1 },
+    { name: 'resume', maxCount: 1 },
+  ]), newUser);
 
 // Route.... /api/v1/user/all
 app.get('/all',adminOnly, getAllUsers);

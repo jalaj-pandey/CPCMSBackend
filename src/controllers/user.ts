@@ -6,17 +6,25 @@ import ErrorHandler from "../types/utility-class.js";
 import { rm } from "fs";
 
 export const newUser = TryCatch(
+  
   async (
     req: Request<{}, {}, NewUserRequestBody>,
     res,
     next
   ) => {
-    const { name, email, gender, role, _id, dob } = req.body;
-    const photo = req.file;
+    console.log("chla?")
 
+    const { name, email, gender, role, _id, dob } = req.body;
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+const photo = files?.['photo']?.[0];
+const resume = files?.['resume']?.[0];
+
+    console.log("aarha h?")
     let user = await User.findById(_id);
     
-    if (!photo) return next(new ErrorHandler("Please provide a photo", 400));
+    if (!photo || !resume) return next(new ErrorHandler("Please provide a photo", 400));
+
+    console.log("aaya")
 
     if (user)
       return res.status(200).json({
@@ -26,6 +34,9 @@ export const newUser = TryCatch(
 
     if (!_id || !name || !email || !gender || !role || !dob){
       rm(photo.path, () => {
+        console.log("deleted");
+      });
+      rm(resume.path, () => {
         console.log("deleted");
       });
       return next(new ErrorHandler("Please provide all fields", 400));
@@ -39,6 +50,7 @@ export const newUser = TryCatch(
       _id,
       dob: new Date(dob),
       photo: photo.path,
+      resume: resume.path,
     });
     return res.status(201).json({
       success: true,

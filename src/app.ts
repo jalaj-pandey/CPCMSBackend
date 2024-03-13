@@ -2,22 +2,32 @@ import express from "express";
 import { connectDB } from "./utils/features.js";
 import { errorMiddleware } from "./middlewares/error.js";
 import NodeCache from "node-cache"
+import { config } from "dotenv";
+import morgan from "morgan";
 
+//Importing Routes
 import userRoute from "./routes/user.js"
 import jobRoute from "./routes/jobs.js"
+import applicationRoute from "./routes/application.js"
 
+config({
+    path: "./.env",
+})
 
 const port = process.env.PORT || 3000;
 const app = express();
-
+const mongoURI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017";
 
 app.use(express.json());
-connectDB();
+app.use(morgan("dev"))
+
+connectDB(mongoURI);
 
 export const myCache = new NodeCache();
 
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/job", jobRoute);
+app.use("/api/v1/apply", applicationRoute);
 
 app.get("/", (req, res) => {
     res.send("This is working");

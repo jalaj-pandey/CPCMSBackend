@@ -15,6 +15,7 @@ export interface NewUserRequestBody {
   _id: string;
   name: string;
   email: string;
+  resume: string;
   photo: string;
   role: "admin" | "user";
   gender: "male" | "female";
@@ -55,4 +56,10 @@ export type InvalidateCacheProps = {
   jobs ?: boolean,
   apply ?: boolean,
   admin ?: boolean,
+}
+
+
+export interface newApplicationRequestBody {
+  user: String,
+  jobs: String,
 }

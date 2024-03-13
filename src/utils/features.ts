@@ -3,8 +3,8 @@ import { InvalidateCacheProps } from "../types/types.js";
 import { Jobs } from "../models/jobs.js";
 import { myCache } from "../app.js";
 
-export const connectDB = () =>{
-    mongoose.connect("mongodb://127.0.0.1:27017",{
+export const connectDB = (uri:string) =>{
+    mongoose.connect(uri,{
         dbName: "Placements"
     }).then(c => console.log(`DB connected to ${c.connection.host}successfully`)).
     catch(e  => console.log('e'));
