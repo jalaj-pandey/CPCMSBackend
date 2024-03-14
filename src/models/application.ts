@@ -2,6 +2,17 @@ import mongoose from "mongoose";
 
 const schema = new mongoose.Schema(
   {
+    
+    user:{
+      type: String,
+      ref: "User",
+      required: true, 
+    },
+    status: {
+      type: String,
+      enum: ["Applied", "Shortlisted", "Interview Call"],
+      default: "Applied",
+    },
     jobInfo: [{
       name: String,
       title: String,
@@ -19,10 +30,7 @@ const schema = new mongoose.Schema(
         photo: String,
         gender: String,
         dob: Date,
-        userId: {
-          type: String,
-          ref: "User",
-        },
+       
       }
     ]
   },

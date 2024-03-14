@@ -54,6 +54,9 @@ export type InvalidateCacheProps = {
   jobs?: boolean;
   apply?: boolean;
   admin?: boolean;
+  userId?: string;
+  applyId?: string;
+
 };
 
 export type jobInfoType = {
@@ -74,6 +77,7 @@ export type userInfoType = {
 };
 
 export interface newApplicationRequestBody {
+  user: string;
   userInfo: userInfoType[];
   jobInfo: jobInfoType[];
 }
