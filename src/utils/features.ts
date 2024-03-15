@@ -1,8 +1,7 @@
 import mongoose from "mongoose"
 import { InvalidateCacheProps } from "../types/types.js";
-import { Jobs } from "../models/jobs.js";
 import { myCache } from "../app.js";
-import { Apply } from "../models/application.js";
+
 
 export const connectDB = (uri:string) =>{
     mongoose.connect(uri,{
@@ -12,12 +11,14 @@ export const connectDB = (uri:string) =>{
 
 }
 
-export const invalidateCache = async ({jobs, apply, admin, userId, applyId, }:InvalidateCacheProps) => {
+export const invalidateCache = async ({jobs, apply, admin, userId, applyId, jobId}:InvalidateCacheProps) => {
     if(jobs) {
 
         const jobKeys: string[] = ["latest-jobs", "admin-jobs"];
         
-        myCache.del(jobKeys);
+        if (typeof jobId === "string") jobKeys.push(`job-${jobId}`);
+
+    myCache.del(jobKeys);
     }
     if(apply) {
         const appliesKeys: string[] = [

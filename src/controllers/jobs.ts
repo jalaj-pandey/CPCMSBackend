@@ -49,12 +49,12 @@ export const getSingleJob = TryCatch(async (req, res, next) => {
   if (myCache.has(`job-${id}`))
     job = JSON.parse(myCache.get(`job-${id}`) as string);
   else {
-    const job = await Jobs.findById(id);
+   job = await Jobs.findById(id);
     if (!job) return next(new ErrorHandler("Job not found", 404));
     myCache.set(`job-${id}`, JSON.stringify(job));
   }
 
-  return res.status(201).json({
+  return res.status(200).json({
     success: true,
     job,
   });
@@ -127,7 +127,7 @@ export const updateJob = TryCatch(async (req, res, next) => {
   if (location) job.location = location;
 
   await job.save();
-  await invalidateCache({jobs : true});
+  await invalidateCache({jobs : true, jobId : String(job._id)});
 
   return res.status(200).json({
     success: true,
@@ -146,7 +146,7 @@ export const deleteJob = TryCatch(async (req, res, next) => {
   
   await job.deleteOne();
   
-  await invalidateCache({jobs : true});
+  await invalidateCache({jobs : true, jobId : String(job._id)});
 
   return res.status(201).json({
     success: true,

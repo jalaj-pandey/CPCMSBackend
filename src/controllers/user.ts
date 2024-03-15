@@ -4,6 +4,7 @@ import { NewUserRequestBody } from "../types/types.js";
 import { TryCatch } from "../middlewares/error.js";
 import ErrorHandler from "../types/utility-class.js";
 import { rm } from "fs";
+import path from "path";
 
 export const newUser = TryCatch(
   
@@ -32,7 +33,7 @@ const resume = files?.['resume']?.[0];
         message: `Welcome ${user.name}`,
       });
 
-    if (!_id || !name || !email || !gender || !role || !dob){
+    if (!_id || !name || !email || !gender || !role || !dob ){
       rm(photo.path, () => {
         console.log("deleted");
       });

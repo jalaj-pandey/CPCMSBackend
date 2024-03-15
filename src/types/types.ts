@@ -56,7 +56,7 @@ export type InvalidateCacheProps = {
   admin?: boolean;
   userId?: string;
   applyId?: string;
-
+  jobId?: string;
 };
 
 export type jobInfoType = {
